@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class SalamanderSearch {
     public static void main(String[] args) {
@@ -18,6 +17,17 @@ public class SalamanderSearch {
                 { 'f', 'W', '.', '.', 'W', '.' },
                 { 'W', '.', 'W', '.', '.', '.' },
         };
+
+        Set<int[]> coordinateSet = new HashSet<>();
+        int[] coord1 = new int[] { 1, 5 };
+        int[] coord2 = new int[] { 3, 7 };
+        int[] coord3 = new int[] { 1, 5 };
+
+        coordinateSet.add(coord1);
+        coordinateSet.add(coord2);
+        coordinateSet.add(coord3);
+
+        System.out.println(coordinateSet.size());
     }
 
     /**
@@ -45,23 +55,20 @@ public class SalamanderSearch {
     public static boolean canReach(char[][] enclosure) {
         int[] start = salamanderLocation(enclosure);
         boolean[][] visited = new boolean[enclosure.length][enclosure[0].length];
-
         return canReach(enclosure, start, visited);
     }
 
     // HELPER Methods
-
     public static boolean canReach(char[][] enclosure, int[] currentLocation, boolean[][] visited) {
-        int curR = currentLocation[0];
-        int curC = currentLocation[1];
-
+        int currentRow = currentLocation[0];
+        int currentColumn = currentLocation[1];
         // Base Cases
-        if (visited[curR][curC])
+        if (visited[currentRow][currentColumn])
             return false;
-        if (enclosure[curR][curC] == 'f')
+        if (enclosure[currentRow][currentColumn] == 'f')
             return true;
 
-        visited[curR][curC] = true;
+        visited[currentRow][currentColumn] = true;
 
         List<int[]> moves = possibleMoves(enclosure, currentLocation);
         for (int[] move : moves) {
@@ -72,36 +79,56 @@ public class SalamanderSearch {
     }
 
     public static List<int[]> possibleMoves(char[][] enclosure, int[] currentLocation) {
-        int curR = currentLocation[0];
-        int curC = currentLocation[1];
+        int currentRow = currentLocation[0];
+        int currentColumn = currentLocation[1];
 
         List<int[]> moves = new ArrayList<>();
 
-        // UP
-        int newR = curR - 1;
-        int newC = curC;
-        if (newR >= 0 && enclosure[newR][newC] != 'W') {
-            moves.add(new int[] { newR, newC });
+        int[][] directions = new int[][] {
+                { -1, 0 },
+                { 1, 0 },
+                { 0, -1 },
+                { 0, 1 }
+        };
+
+        for (int[] direction : directions) {
+            int newRow = currentRow + direction[0];
+            int newColumn = currentColumn + direction[1];
+
+            if (newRow >= 0 && newRow < enclosure.length &&
+                    newColumn >= 0 && newColumn < enclosure.length &&
+                    enclosure[newRow][newColumn] != 'W') {
+                moves.add(new int[] { newRow, newColumn });
+            }
         }
-        // DOWN
-        newR = curR + 1;
-        newC = curC;
-        if (newR < enclosure.length && enclosure[newR][newC] != 'W') {
-            moves.add(new int[] { newR, newC });
-        }
-        // LEFT
-        newR = curR;
-        newC = curC - 1;
-        if (newC >= 0 && enclosure[newR][newC] != 'W') {
-            moves.add(new int[] { newR, newC });
-        }
-        // RIGHT
-        newR = curR;
-        newC = curC + 1;
-        if (newC < enclosure[0].length && enclosure[newR][newC] != 'W') {
-            moves.add(new int[] { newR, newC });
-        }
+
         return moves;
+
+        // // UP
+        // int newRow = currentRow - 1;
+        // int newColumn = currentColumn;
+        // if (newRow >= 0 && enclosure[newRow][newColumn] != 'W') {
+        // moves.add(new int[] { newRow, newColumn });
+        // }
+        // // DOWN
+        // newRow = currentRow + 1;
+        // newColumn = currentColumn;
+        // if (newRow < enclosure.length && enclosure[newRow][newColumn] != 'W') {
+        // moves.add(new int[] { newRow, newColumn });
+        // }
+        // // LEFT
+        // newRow = currentRow;
+        // newColumn = currentColumn - 1;
+        // if (newColumn >= 0 && enclosure[newRow][newColumn] != 'W') {
+        // moves.add(new int[] { newRow, newColumn });
+        // }
+        // // RIGHT
+        // newRow = currentRow;
+        // newColumn = currentColumn + 1;
+        // if (newColumn < enclosure[0].length && enclosure[newRow][newColumn] != 'W') {
+        // moves.add(new int[] { newRow, newColumn });
+        // }
+        // return moves;
     }
 
     public static int[] salamanderLocation(char[][] enclosure) {
